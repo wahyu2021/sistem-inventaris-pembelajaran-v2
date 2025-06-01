@@ -1,66 +1,150 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SISINPEM - Sistem Informasi Inventaris Pembelajaran
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Selamat datang di SISINPEM, sebuah aplikasi web yang dirancang untuk membantu institusi pendidikan dalam mengelola inventaris barang dan perlengkapan pembelajaran secara efisien. Aplikasi ini dibangun untuk tujuan pembelajaran oleh Kelompok 2 MIC2023.
 
-## About Laravel
+## Deskripsi Singkat
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+SISINPEM memungkinkan administrator untuk mencatat, melacak, dan mengelola aset pembelajaran, mulai dari buku, peralatan lab, hingga perangkat elektronik. Mahasiswa dapat melihat daftar inventaris yang tersedia dan melaporkan kerusakan barang dengan mudah. Sistem ini juga dilengkapi dengan notifikasi otomatis untuk kejadian penting seperti pelaporan kerusakan baru atau penambahan item inventaris.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Aplikasi ini dirancang dengan antarmuka yang responsif namun sangat direkomendasikan untuk diakses melalui perangkat desktop untuk pengalaman pengguna yang optimal karena kompleksitas beberapa fitur manajemen.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Fitur Utama
 
-## Learning Laravel
+### Panel Admin:
+* **Dashboard Ringkasan:** Menampilkan statistik kunci mengenai total item, kuantitas, kondisi barang, jumlah laporan kerusakan (terbuka/selesai), jumlah kategori, dan ringkasan pengguna.
+* **Manajemen Kategori:** Operasi CRUD (Create, Read, Update, Delete) untuk kategori barang.
+* **Manajemen Item (Data Inventaris):** Operasi CRUD untuk item inventaris, termasuk upload gambar, pemilihan kategori, pencatatan kode unik, kuantitas, kondisi, dan lokasi.
+* **Manajemen Laporan Kerusakan:** Melihat daftar laporan kerusakan yang dikirim oleh mahasiswa atau dibuat oleh admin, memperbarui status laporan (misalnya, diverifikasi, dalam perbaikan, selesai diperbaiki, dihapuskan), menambahkan catatan admin, dan melihat detail laporan termasuk tipe kerusakan (ringan, sedang, berat) dan foto kerusakan.
+* **Manajemen Notifikasi:** Melihat daftar notifikasi yang dihasilkan sistem (misalnya, laporan kerusakan baru, item baru ditambahkan), menandai notifikasi sebagai sudah dibaca/belum dibaca, dan menghapus notifikasi.
+* **Manajemen Pengguna (implisit):** Sistem membedakan peran admin dan mahasiswa, di mana akun dibuat melalui antarmuka administrator basis data (seperti phpMyAdmin).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Panel Mahasiswa:
+* **Dashboard Mahasiswa:** Menampilkan ringkasan laporan kerusakan yang pernah dibuat dan tautan cepat ke fitur lain.
+* **Lihat Daftar Barang (Cek Barang):** Mencari dan memfilter daftar item inventaris yang tersedia.
+* **Lapor Kerusakan Barang:** Mengirimkan laporan kerusakan untuk item tertentu, termasuk deskripsi kerusakan, pemilihan tipe kerusakan (ringan, sedang, berat), dan kemampuan untuk mengunggah foto kerusakan.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Fitur Sistem:
+* **Notifikasi Otomatis:** Notifikasi dikirim ke admin ketika ada laporan kerusakan baru atau ketika item inventaris baru ditambahkan.
+* **Kontrol Akses Berbasis Peran:** Fungsionalitas yang berbeda untuk peran Admin dan Mahasiswa.
+* **Antarmuka Pengguna:** Didesain dengan tema warna biru dominan (`blue-700`) dan tidak menggunakan dark mode.
+* **Deteksi Perangkat:** Memberikan rekomendasi atau mengarahkan pengguna untuk menggunakan perangkat desktop demi fungsionalitas penuh.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Teknologi yang Digunakan
 
-## Laravel Sponsors
+* **Framework Backend:** Laravel 11
+* **Framework Frontend Dinamis:** Livewire
+* **Scaffolding Autentikasi & UI Awal:** Laravel Jetstream (dengan stack Livewire)
+* **Styling:** Tailwind CSS
+* **Ikon:** Heroicons (digunakan melalui komponen Blade)
+* **Database:** MySQL (atau database relasional lain yang didukung Laravel)
+* **Web Server:** Apache/Nginx (atau `php artisan serve` untuk development)
+* **PHP:** Versi 8.2 atau lebih baru (sesuai kebutuhan Laravel 11)
+* **Manajemen Dependensi:** Composer (PHP), NPM/Yarn (JavaScript)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Prasyarat
 
-### Premium Partners
+Sebelum Anda memulai, pastikan sistem Anda telah terinstal:
+* PHP >= 8.2
+* Composer versi 2.x
+* Node.js & NPM (atau Yarn)
+* Database Server (misalnya MySQL, MariaDB)
+* Git (opsional, untuk kloning)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Panduan Instalasi dan Setup Lokal
 
-## Contributing
+1.  **Clone Repository (Jika Ada):**
+    ```bash
+    git clone [URL_REPOSITORY_ANDA] sisinpem
+    cd sisinpem
+    ```
+    Jika tidak ada repository, Anda akan membuat proyek dari awal dengan `composer create-project laravel/laravel sisinpem "11.*"`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2.  **Instal Dependensi PHP:**
+    ```bash
+    composer install
+    ```
 
-## Code of Conduct
+3.  **Buat File Environment:**
+    Salin `.env.example` menjadi `.env`:
+    ```bash
+    cp .env.example .env
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4.  **Generate Kunci Aplikasi:**
+    ```bash
+    php artisan key:generate
+    ```
 
-## Security Vulnerabilities
+5.  **Konfigurasi Database di `.env`:**
+    Sesuaikan variabel berikut dengan konfigurasi database lokal Anda:
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=db_sisinpem # Ganti dengan nama database Anda
+    DB_USERNAME=root      # Ganti dengan username database Anda
+    DB_PASSWORD=          # Ganti dengan password database Anda
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    APP_URL=http://localhost:8000 # Sesuaikan jika port berbeda saat development
+    ```
 
-## License
+6.  **Jalankan Migrasi dan Seeder:**
+    Perintah ini akan membuat struktur tabel di database dan mengisi data awal (jika Anda sudah membuat seeder untuk peran, kategori default, atau user admin).
+    ```bash
+    php artisan migrate --seed
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+7.  **Instal Dependensi Frontend:**
+    ```bash
+    npm install
+    # atau
+    # yarn install
+    ```
+
+8.  **Compile Aset Frontend:**
+    ```bash
+    npm run dev
+    # atau
+    # yarn dev
+    ```
+    Untuk build produksi: `npm run build` atau `yarn build`.
+
+9.  **Buat Symbolic Link untuk Storage:**
+    Agar file yang diupload (seperti gambar item atau laporan kerusakan) bisa diakses publik:
+    ```bash
+    php artisan storage:link
+    ```
+
+10. **Jalankan Development Server:**
+    ```bash
+    php artisan serve
+    ```
+    Aplikasi akan tersedia di `http://localhost:8000` (atau port lain jika default sudah terpakai).
+
+11. **(Opsional) Jalankan Queue Worker:**
+    Jika notifikasi atau pekerjaan lain di-queue (`ShouldQueue`), jalankan worker:
+    ```bash
+    php artisan queue:work
+    ```
+
+## Penggunaan
+
+Setelah setup selesai:
+* Akses aplikasi melalui URL yang ditampilkan oleh `php artisan serve`.
+* **Login Akun:** Akun pengguna (Admin dan Mahasiswa) dibuat secara manual melalui phpMyAdmin atau alat manajemen database lainnya. Tidak ada fitur registrasi publik.
+    * **Contoh Akun Admin (jika dibuat via Seeder):**
+        * Email: `admin@example.com`
+        * Password: `password` (sesuaikan dengan yang Anda set di seeder)
+    * **Contoh Akun Mahasiswa (jika dibuat via Seeder):**
+        * Email: `mahasiswa@example.com`
+        * Password: `password`
+
+## Catatan Mengenai Pendaftaran Pengguna
+
+Fitur pendaftaran pengguna publik sengaja tidak diaktifkan. Semua akun pengguna, baik untuk Admin maupun Mahasiswa, diharapkan untuk dibuat dan dikelola oleh administrator sistem langsung melalui database
+
+## Ucapan Terima Kasih / Pengembang
+
+Dibuat untuk tujuan pembelajaran oleh **Kelompok 2 MIC2023**.
+
+---
