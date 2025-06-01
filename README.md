@@ -54,7 +54,7 @@ Sebelum Anda memulai, pastikan sistem Anda telah terinstal:
 
 1.  **Clone Repository (Jika Ada):**
     ```bash
-    git clone [URL_REPOSITORY_ANDA] sisinpem
+    git clone https://github.com/wahyu2021/sistem-inventaris-pembelajaran-v2.git sisinpem
     cd sisinpem
     ```
     Jika tidak ada repository, Anda akan membuat proyek dari awal dengan `composer create-project laravel/laravel sisinpem "11.*"`.
