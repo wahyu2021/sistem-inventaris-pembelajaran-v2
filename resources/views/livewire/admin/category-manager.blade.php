@@ -16,16 +16,6 @@
                     <h3 class="text-2xl font-semibold text-gray-700 mb-2 sm:mb-0">
                         Daftar Kategori
                     </h3>
-                    <button wire:click="create()"
-                        class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition ease-in-out duration-150">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20"
-                            fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M10 3a1 1 0 011 1v4h4a1 1 0 110 2h-4v4a1 1 0 11-2 0v-4H5a1 1 0 110-2h4V4a1 1 0 011-1z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Tambah Kategori
-                    </button>
                 </div>
 
                 {{-- Pesan Sukses/Error dari Session Flash --}}
@@ -109,10 +99,20 @@
                 @endif
 
                 {{-- Input Pencarian --}}
-                <div class="mb-4">
+                <div class="mb-4 flex justify-between">
                     <input type="text" wire:model.live.debounce.300ms="search"
                         placeholder="Cari berdasarkan nama atau deskripsi kategori..."
                         class="form-input rounded-md shadow-sm w-full sm:w-2/3 lg:w-1/2 py-2 px-3 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <button wire:click="create()"
+                        class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition ease-in-out duration-150">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 3a1 1 0 011 1v4h4a1 1 0 110 2h-4v4a1 1 0 11-2 0v-4H5a1 1 0 110-2h4V4a1 1 0 011-1z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Tambah Kategori
+                    </button>
                 </div>
 
                 {{-- Tabel untuk Menampilkan Daftar Kategori --}}
