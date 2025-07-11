@@ -20,24 +20,24 @@ class DashboardPage extends Component
 
         // Ambil beberapa laporan kerusakan terbaru dari pengguna ini
         $this->recentDamageReports = $user->damageReports() // Asumsi relasi damageReports() ada di model User
-                                        ->with('item:id,name') // Eager load nama item
-                                        ->latest('reported_at') // Urutkan berdasarkan tanggal lapor terbaru
-                                        ->take(5) // Ambil 5 laporan terbaru
-                                        ->get();
+            ->with('item:id,name') // Eager load nama item
+            ->latest('reported_at') // Urutkan berdasarkan tanggal lapor terbaru
+            ->take(5) // Ambil 5 laporan terbaru
+            ->get();
 
-        // Statistik Laporan Pengguna
+        // Statistik Laporan Pengguna   
         $this->totalMyReports = $user->damageReports()->count();
         $this->myOpenReports = $user->damageReports()
-                                  ->whereIn('status', ['dilaporkan', 'diverifikasi', 'dalam_perbaikan'])
-                                  ->count();
+            ->whereIn('status', ['dilaporkan', 'diverifikasi', 'dalam_perbaikan'])
+            ->count();
         $this->myResolvedReports = $user->damageReports()
-                                     ->whereIn('status', ['selesai_diperbaiki', 'dihapuskan'])
-                                     ->count();
+            ->whereIn('status', ['selesai_diperbaiki', 'dihapuskan'])
+            ->count();
     }
 
     public function render()
     {
         return view('livewire.mahasiswa.dashboard-page')
-               ->layout('layouts.app'); // Menggunakan layout default Jetstream (x-app-layout)
+            ->layout('layouts.app'); // Menggunakan layout default Jetstream (x-app-layout)
     }
 }

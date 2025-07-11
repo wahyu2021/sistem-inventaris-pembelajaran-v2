@@ -3,60 +3,103 @@
 namespace App\Livewire\Mahasiswa;
 
 use Livewire\Component;
-use App\Models\Item;
+use App\Models\Location;
 use App\Models\DamageReport;
-use App\Models\User; // Untuk mengambil admin
+use App\Models\User;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\ItemDamagedNotification; // Notifikasi untuk admin
+use App\Notifications\DamageReportSubmittedNotification; // Pastikan notifikasi ini ada
+use Illuminate\Validation\Rule;
 
 class ReportDamageForm extends Component
 {
     use WithFileUploads;
 
-    public ?Item $item = null; // Item yang akan dilaporkan
-    public $itemId;
-
+    public ?Location $location = null;
+    public $locationId = null;
+    public $locationSearch = '';
+    public $locationSearchResults = [];
+    public $selectedLocationId = null;
+    public $selectedLocationName = '';
     public $description;
-    public $severity = 'ringan'; // Default severity
-    public $newImageDamage; // Untuk upload foto kerusakan
-
+    public $severity = 'ringan';
+    public $newImageDamage;
     public $allowedSeverities = [];
-    public $allItems; // Untuk dropdown jika item tidak dipilih dari awal
+
+    public function mount($locationParam = null)
+    {
+        if (property_exists(DamageReport::class, 'allowedSeverities') && is_array(DamageReport::$allowedSeverities)) {
+            $this->allowedSeverities = DamageReport::$allowedSeverities;
+        } else {
+            $this->allowedSeverities = ['ringan', 'sedang', 'parah'];
+            // \Log::warning('ReportDamageForm: DamageReport::$allowedSeverities tidak terdefinisi atau bukan array.');
+        }
+
+        if ($locationParam) {
+            if ($locationParam instanceof Location) {
+                $this->location = $locationParam;
+                $this->locationId = $this->location->id;
+                $this->selectedLocationId = $this->location->id;
+                $this->selectedLocationName = $this->location->name;
+            } else {
+                $foundLocation = Location::find($locationParam);
+                if ($foundLocation) {
+                    $this->location = $foundLocation;
+                    $this->locationId = $foundLocation->id;
+                    $this->selectedLocationId = $foundLocation->id;
+                    $this->selectedLocationName = $foundLocation->name;
+                }
+            }
+        }
+    }
 
     protected function rules()
     {
         return [
-            'itemId' => 'required|exists:items,id',
+            'selectedLocationId' => 'required|exists:locations,id',
             'description' => 'required|string|min:10|max:1000',
-            'severity' => ['required', \Illuminate\Validation\Rule::in(DamageReport::$allowedSeverities)],
-            'newImageDamage' => 'nullable|image|max:2048', // Maks 2MB
+            'severity' => ['required', Rule::in($this->allowedSeverities)],
+            'newImageDamage' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 
     protected $messages = [
-        'itemId.required' => 'Item wajib dipilih.',
+        'selectedLocationId.required' => 'Lokasi wajib dipilih atau sudah ditentukan dari URL.',
+        'selectedLocationId.exists' => 'Lokasi yang dipilih tidak valid atau tidak ditemukan.',
         'description.required' => 'Deskripsi kerusakan wajib diisi.',
         'description.min' => 'Deskripsi minimal 10 karakter.',
-        'severity.required' => 'Tipe kerusakan wajib dipilih.',
+        'severity.required' => 'Tingkat kerusakan wajib dipilih.',
         'newImageDamage.image' => 'File harus berupa gambar.',
+        'newImageDamage.mimes' => 'Format gambar yang diizinkan adalah JPEG, PNG, JPG, GIF.',
         'newImageDamage.max' => 'Ukuran gambar maksimal 2MB.',
     ];
 
-    public function mount($item = null) // $item bisa berupa ID atau null
+    public function updatedLocationSearch()
     {
-        if ($item) {
-            if ($item instanceof Item) {
-                $this->item = $item;
-                $this->itemId = $item->id;
+        if (!$this->locationId) {
+            $this->selectedLocationId = null;
+            $this->selectedLocationName = '';
+            $this->resetErrorBag('selectedLocationId');
+
+            if (strlen($this->locationSearch) >= 2) {
+                $this->locationSearchResults = Location::where('name', 'like', '%' . $this->locationSearch . '%')
+                    ->orderBy('name')
+                    ->limit(5)
+                    ->get();
             } else {
-                $this->item = Item::find($item);
-                $this->itemId = $item;
+                $this->locationSearchResults = [];
             }
         }
-        $this->allItems = Item::orderBy('name')->get(['id', 'name']);
-        $this->allowedSeverities = DamageReport::$allowedSeverities;
+    }
+
+    public function selectLocationFromSearch($locationId, $locationName)
+    {
+        $this->selectedLocationId = $locationId;
+        $this->selectedLocationName = $locationName;
+        $this->locationSearch = $locationName;
+        $this->locationSearchResults = [];
+        $this->resetErrorBag('selectedLocationId');
     }
 
     public function submitReport()
@@ -65,56 +108,54 @@ class ReportDamageForm extends Component
         $imagePath = null;
 
         if ($this->newImageDamage) {
-            $imagePath = $this->newImageDamage->store('damage-reports', 'public');
+            $imagePath = $this->newImageDamage->store('damage-reports/locations', 'public');
         }
 
-        $damageReport = DamageReport::create([
-            'item_id' => $this->itemId, // Gunakan $this->itemId yang sudah divalidasi
-            'reported_by_user_id' => Auth::id(),
+        $reportedByName = Auth::check() ? Auth::user()->name : 'Guest';
+        $reportedByIdUser = Auth::id();
+
+        DamageReport::create([
+            'location_id' => $validatedData['selectedLocationId'],
+            'reported_by' => $reportedByName,
+            'reported_by_id_user' => $reportedByIdUser,
             'description' => $validatedData['description'],
             'severity' => $validatedData['severity'],
-            'status' => 'dilaporkan', // Status awal
+            'status' => 'dilaporkan',
             'image_damage' => $imagePath,
             'reported_at' => now(),
         ]);
 
-        // Ambil instance item yang sebenarnya untuk notifikasi
-        $reportedItem = Item::find($this->itemId);
-
-        if ($reportedItem && $damageReport) {
-            // Kirim notifikasi ke admin
-            $admins = User::where('role', 'admin')->get();
-            if ($admins->isNotEmpty()) {
-                Notification::send($admins, new ItemDamagedNotification($reportedItem, $damageReport));
-            }
-
-            // Update kondisi item berdasarkan laporan baru
-            if ($reportedItem->condition !== 'rusak berat') { // Jangan timpa jika sudah rusak berat
-                if ($validatedData['severity'] === DamageReport::SEVERITY_BERAT) {
-                    $reportedItem->condition = 'rusak berat';
-                } elseif ($validatedData['severity'] === DamageReport::SEVERITY_SEDANG && $reportedItem->condition === DamageReport::SEVERITY_RINGAN) {
-                    $reportedItem->condition = 'rusak ringan'; // atau 'perlu investigasi'
-                } elseif ($validatedData['severity'] === DamageReport::SEVERITY_RINGAN && $reportedItem->condition === 'baik') {
-                    $reportedItem->condition = 'rusak ringan';
-                } else if ($reportedItem->condition === 'baik') { // Jika kondisi awal baik dan ada laporan
-                    $reportedItem->condition = 'perlu investigasi';
-                }
-                $reportedItem->save();
+        $admins = User::where('role', 'admin')->get();
+        if ($admins->isNotEmpty()) {
+            $latestReport = DamageReport::where('location_id', $validatedData['selectedLocationId'])
+                                        ->where('reported_by_id_user', $reportedByIdUser)
+                                        ->latest('reported_at')->first();
+            if ($latestReport) {
+                 Notification::send($admins, new DamageReportSubmittedNotification($latestReport));
             }
         }
 
+        $this->resetFormFields();
         session()->flash('message', 'Laporan kerusakan berhasil dikirim. Terima kasih!');
-        // return redirect()->route('mahasiswa.items.index'); // Redirect ke daftar item
-        // Atau reset form jika ingin tetap di halaman yang sama
-        $this->reset(['description', 'severity', 'newImageDamage']);
-        if (!$this->item) { // Jika item dipilih dari dropdown, reset juga itemId
-            $this->reset('itemId');
+        return redirect()->route('mahasiswa.locations.index');
+    }
+
+    public function resetFormFields()
+    {
+        $this->reset('description', 'severity', 'newImageDamage', 'locationSearch');
+        if (!$this->locationId) {
+            $this->reset('selectedLocationId', 'selectedLocationName', 'locationSearchResults');
         }
     }
 
     public function render()
     {
-        return view('livewire.mahasiswa.report-damage-form')
-            ->layout('layouts.app');
+        $headerTitle = $this->selectedLocationName
+            ? 'Laporkan Kerusakan: ' . $this->selectedLocationName
+            : 'Laporkan Kerusakan Lokasi';
+
+        return view('livewire.mahasiswa.report-damage-form', [ // Pastikan path ini benar
+            'headerTitle' => $headerTitle
+        ])->layout('layouts.app');
     }
 }

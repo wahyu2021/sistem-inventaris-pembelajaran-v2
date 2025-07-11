@@ -28,7 +28,7 @@
                                 <p class="text-sm text-gray-600">Nama: {{ $item->name }}</p>
                                 <p class="text-sm text-gray-600">Kode Unik: {{ $item->unique_code ?? '-' }}</p>
                                 <p class="text-sm text-gray-600">Kategori: {{ $item->category->name ?? '-' }}</p>
-                                <input type="hidden" wire:model="itemId" value="{{ $item->id }}">
+                                <input type="hidden" wire:model="itemId" value="{{ $item->id }}">   
                             </div>
                             <hr />
                         @else
